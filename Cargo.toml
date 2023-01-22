@@ -1,0 +1,16 @@
+[package]
+name = "tiny-azagent"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+# optimize for size - this program runs once on every boot...
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+[dependencies]
+# wireserver is http only
+curl = { version = "0.4.44", default_features = false }
+xml-rs = "0.8.4"
+xmltree = "0.10.3"
