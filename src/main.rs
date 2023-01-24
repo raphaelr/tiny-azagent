@@ -7,8 +7,7 @@ use curl::easy::{Easy, List};
 use xmltree::Element;
 use xml::writer::{EventWriter, XmlEvent};
 
-//const WIRESERVER: &str = "http://168.63.129.16";
-const WIRESERVER: &str = "http://localhost:8000";
+const WIRESERVER: &str = "http://168.63.129.16";
 
 #[derive(Debug)]
 enum AppError {
@@ -33,9 +32,10 @@ fn main() -> AppResult<()> {
     eprintln!("Fetching goal state...");
     let goal_state_buf = retry(get_goal_state)?;
     let goal_state = parse_goal_state(&String::from_utf8(goal_state_buf)?)?;
-    eprintln!("Goal state: {:?}", goal_state);
+    eprintln!("{:?}", goal_state);
 
     let ready_data = get_ready_data(&goal_state)?;
+    eprintln!("Reporting readiness: {}", String::from_utf8(ready_data.clone())?);
     retry(|| report_ready(&ready_data))?;
     eprintln!("Reported ready, exiting");
     Ok(())
@@ -104,6 +104,7 @@ fn get_ready_data(goal_state: &GoalState) -> AppResult<Vec<u8>> {
         w.write(XmlEvent::end_element())?;
     w.write(XmlEvent::end_element())?;
 
+    w.write(XmlEvent::end_element())?;
     Ok(w.into_inner().into_inner())
 }
 
@@ -122,7 +123,7 @@ fn report_ready(goal_state: &[u8]) -> AppResult<()> {
 
     let mut headers = List::new();
     headers.append("x-ms-version: 2012-11-30").unwrap();
-    headers.append("x-ms-agent-name: tiny-azagent").unwrap();
+    headers.append("x-ms-agent-name: custom-provisioning").unwrap();
     headers.append("content-type: text/xml; charset=utf-8").unwrap();
     request.http_headers(headers).unwrap();
 
@@ -144,7 +145,7 @@ fn report_ready(goal_state: &[u8]) -> AppResult<()> {
 
 fn retry<T, F: Fn() -> Result<T, AppError>>(f: F) -> AppResult<T> {
     let mut timeout = Duration::from_millis(500);
-    const MAX_TIMEOUT: Duration = Duration::from_secs(5 * 60);
+    const MAX_TIMEOUT: Duration = Duration::from_secs(2 * 60);
 
     loop {
         let res = f();
@@ -155,6 +156,7 @@ fn retry<T, F: Fn() -> Result<T, AppError>>(f: F) -> AppResult<T> {
             eprintln!("Retry limit exceeded, aborting");
             return res;
         }
+        eprintln!("{:?}", res.err().unwrap());
         std::thread::sleep(timeout);
         timeout *= 2;
     }

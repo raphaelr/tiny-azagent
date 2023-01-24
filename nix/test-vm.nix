@@ -5,8 +5,6 @@
 
 {
   imports = [ "${modulesPath}/virtualisation/azure-common.nix" ];
-  # Begone
-  virtualisation.azure.agent.enable = lib.mkForce false;
 
   # Users
   users.mutableUsers = false;
@@ -22,27 +20,31 @@
   # Networking
   networking = {
     hostName = "tiny-azagent-test";
-    useNetworkd = true;
     useDHCP = false;
   };
 
+  systemd.network.enable = true;
   systemd.network.networks."30-eth0" = {
     name = "eth0";
     DHCP = "yes";
   };
   services.openssh.enable = true;
 
+  # Environment
   time.timeZone = "UTC";
 
-  #swapDevices = [{ device = "/mnt/resource/swapfile"; size = 1024; }];
+  system.stateVersion = "22.11";
 
   # Azure
   virtualisation.azure.tiny-azagent.enable = true;
+  virtualisation.azure.agent.enable = lib.mkForce false;
 
   systemd.services.consume-hypervisor-entropy = {
     description = "Consume entropy in ACPI table provided by Hyper-V";
 
-    wantedBy = [ "basic.target" ];
+    wantedBy = [ "sysinit.target" ];
+    before = [ "sysinit.target" ];
+    unitConfig.DefaultDependencies = false;
 
     path = [ pkgs.coreutils ];
     script = ''
@@ -59,11 +61,13 @@
     ENV{DEVTYPE}=="disk", ATTRS{device_id}=="?00000000-0001-*", SYMLINK+="disk/azure-resource"
   '';
 
-  #fileSystems."/mnt/resource" = {
-  #  device = "/dev/disk/azure-resource";
-  #  fsType = "ext4";
-  #  autoFormat = true;
-  #};
+  fileSystems."/mnt/resource" = {
+    device = "/dev/disk/azure-resource";
+    fsType = "ext4";
+    autoFormat = true;
+  };
+
+  swapDevices = [{ device = "/mnt/resource/swapfile"; size = 1024; }];
 
   system.build.azureImage = import "${modulesPath}/../lib/make-disk-image.nix" {
     name = "azure-image";
@@ -76,6 +80,4 @@
     copyChannel = false;
     inherit config lib pkgs;
   };
-
-  system.stateVersion = "22.11";
 }

@@ -35,5 +35,10 @@
           ./nix/test-vm.nix
         ];
       };
+
+      checks = forAllSystems (system:
+        {
+          inherit (nixpkgsFor.${system}) tiny-azagent;
+        });
     };
 }

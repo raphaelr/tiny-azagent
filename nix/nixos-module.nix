@@ -49,6 +49,9 @@ in
         RestrictNamespaces = true;
         SystemCallFilter = [ "@system-service" "~@privileged" ];
         SystemCallArchitectures = "native";
+
+        IPAddressAllow = "168.63.129.16";
+        IPAddressDeny = "any";
       };
     };
   };
