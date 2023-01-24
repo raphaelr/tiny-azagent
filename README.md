@@ -1,6 +1,6 @@
 # tiny-azagent
 
-**Work in progress, do not use!**
+**Use at your own risk!**
 
 Minimal provisioning agent for Azure VMs. This thing *only* reports "ready" to Azure. It does not perform any provisioning tasks. This is useful if you are already deploying a fully provisioned image to Azure.
 
@@ -9,6 +9,8 @@ Minimal provisioning agent for Azure VMs. This thing *only* reports "ready" to A
 *After* network is ready (i.e. eth0 has a DHCP lease), start this program. It will tell Azure that the VM is ready and immediately exit.
 
 Only run one of waagent, cloud-init, or tiny-azagent. Running multiple provisioning agents causes explosions.
+
+A sample systemd unit is kind of in `nix/nixos-module.nix`.
 
 ## Disclaimer
 
@@ -32,6 +34,7 @@ Since this agent does so little, to have a functioning VM you must perform *at l
 3. Your disk image must have preconfigured users. This agent does not install SSH keys or root passwords.
 4. If you want to use the temporary resource disk, you must manually mount/format it (e.g. udev disk with [`ATTRS{device_id}=="?00000000-0001-*"`](https://github.com/Azure/WALinuxAgent/blob/04ded9f0b708cfaf4f9b68eead1aef4cc4f32eeb/config/66-azure-storage.rules#L9)
 
+A VM configuration demonstrating this is in `nix/test-vm.nix`.
 
 ## License
 

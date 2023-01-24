@@ -18,7 +18,6 @@ in
   # implementation
   config = lib.mkIf cfg.enable {
     systemd.services.tiny-azagent = {
-      # Requires connectivity to the wireserver (168.63.129.16)
       after = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
 

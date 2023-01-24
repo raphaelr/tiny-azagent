@@ -13,7 +13,6 @@
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILfl45fta8cW2n2+sreVOwZFXsJ3zNp/h47joOn5ctUr" ];
   };
-  users.motd = "Do not run this VM image in production you idiot!";
   security.sudo.wheelNeedsPassword = false;
   nix.settings.trusted-users = [ "admin" ];
 
@@ -32,7 +31,6 @@
 
   # Environment
   time.timeZone = "UTC";
-
   system.stateVersion = "22.11";
 
   # Azure
