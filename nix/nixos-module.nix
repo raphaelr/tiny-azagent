@@ -18,6 +18,8 @@ in
   # implementation
   config = lib.mkIf cfg.enable {
     systemd.services.tiny-azagent = {
+      description = "Report ready to the Azure fabric";
+
       after = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
 

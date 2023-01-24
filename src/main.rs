@@ -144,7 +144,7 @@ fn report_ready(goal_state: &[u8]) -> AppResult<()> {
 }
 
 fn retry<T, F: Fn() -> Result<T, AppError>>(f: F) -> AppResult<T> {
-    let mut timeout = Duration::from_millis(500);
+    let mut timeout = Duration::from_secs(2);
     const MAX_TIMEOUT: Duration = Duration::from_secs(2 * 60);
 
     loop {
