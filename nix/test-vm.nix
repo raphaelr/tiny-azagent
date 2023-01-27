@@ -38,21 +38,26 @@
   virtualisation.azure.agent.enable = lib.mkForce false;
 
   systemd.services.consume-hypervisor-entropy = {
+    # Based on: https://github.com/NixOS/nixpkgs/blob/c11e244d6e4f84f45b7f86b1396757063b4d8ab5/nixos/modules/virtualisation/azure-agent.nix#L220
     description = "Consume entropy in ACPI table provided by Hyper-V";
 
     wantedBy = [ "sysinit.target" ];
     before = [ "sysinit.target" ];
     unitConfig.DefaultDependencies = false;
+    restartIfChanged = false;
 
     path = [ pkgs.coreutils ];
     script = ''
       echo "Fetching entropy..."
       cat /sys/firmware/acpi/tables/OEM0 > /dev/random
     '';
-    serviceConfig.Type = "oneshot";
-    serviceConfig.RemainAfterExit = true;
-    serviceConfig.StandardError = "journal+console";
-    serviceConfig.StandardOutput = "journal+console";
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      StandardError = "journal+console";
+      StandardOutput = "journal+console";
+    };
   };
 
   services.udev.extraRules = ''
