@@ -13,10 +13,7 @@ rustPlatform.buildRustPackage {
   src = lib.sourceByRegex ../. ["Cargo\.*" "src.*" ];
   cargoLock.lockFile = ../Cargo.lock;
 
-  nativeBuildInputs = [
-    clippy
-    pkg-config
-  ];
+  nativeBuildInputs = [ pkg-config ];
 
   buildInputs = [ curl ];
 

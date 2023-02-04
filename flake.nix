@@ -24,6 +24,18 @@
         {
           default = pkgs.tiny-azagent;
         });
+
+      devShells = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system}; in
+        {
+          default = pkgs.mkShell {
+            inputsFrom = [ pkgs.tiny-azagent ];
+            packages = [
+              pkgs.cargo-audit
+              pkgs.clippy
+            ];
+          };
+        });
       
       nixosModules.default = import ./nix/nixos-module.nix;
 
