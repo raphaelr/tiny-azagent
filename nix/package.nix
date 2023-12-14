@@ -22,5 +22,6 @@ rustPlatform.buildRustPackage {
     homepage = "https://sr.ht/~raphi/tiny-azagent/";
     license = lib.licenses.mit;
     platforms = lib.platforms.linux;
+    mainProgram = "tiny-azagent";
   };
 }
